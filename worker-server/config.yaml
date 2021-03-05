@@ -1,0 +1,5 @@
+PROJECT_NAME: vlcc-304007
+BUCKET_NAME: vlcc-storage
+DATASET_NAME: vlcc_data
+TABLE_NAME: voyage_log
+OUTPUT_BUCKET_NAME: dev-output
