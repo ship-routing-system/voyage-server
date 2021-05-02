@@ -1,0 +1,3 @@
+[submodule "oil-carrier-route-forecasting"]
+	path = third-party/oil-carrier-route-forecasting
+	url = https://github.com/ship-routing-system/oil-carrier-route-forecasting
