@@ -1,3 +1,4 @@
+import logging
 import pathlib
 from io import BytesIO
 from typing import Dict
@@ -7,6 +8,7 @@ from flask_caching import Cache
 from voyage.grid import HexGrid
 from voyage.navigate import Navigator, BiDijkstraNavigator
 
+from appserver.commons.utils import timer
 from appserver.config import Config
 
 ROOT_PATH = pathlib.Path(__file__).parent.absolute()
@@ -18,6 +20,7 @@ class NavigatorRepo:
     def __init__(self, cache: Cache, config: Config):
         self.cache = cache
         self.bucket = config.storage_bucket
+        self.logger = logging.getLogger(config.LOGGER_NAME)
 
     def get(self, properties: Dict) -> Navigator:
         navi_type = self._choose_type(properties)
@@ -29,10 +32,12 @@ class NavigatorRepo:
 
     def _choose_type(self, properties: Dict):
         if "imo_no" in properties:
-            pass
+            return "1000_2000_all"
         return "default"
 
+    @timer("gunicorn.error")
     def _caching(self, navi_type: str) -> Navigator:
+        self.logger.info("%s 메모리 캐싱을 수행합니다.", navi_type)
         cost = self._download_cost(navi_type)
         grid = HexGrid(*cost.shape)
         navigator = BiDijkstraNavigator(cost, grid)

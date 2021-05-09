@@ -1,5 +1,4 @@
 from .app import create_app
-from .config import LiveConfig
+from .config import DevConfig
 
-
-app = create_app(LiveConfig())
+app = create_app(DevConfig())

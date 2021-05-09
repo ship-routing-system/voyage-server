@@ -6,7 +6,10 @@ from geojson import MultiPoint
 from voyage.grid import Cell
 from voyage.utils.distance import haversine
 
+from appserver.commons.utils import timer
 
+
+@timer("gunicorn.error")
 def merge_path(paths: List[List[Tuple]]) -> List[Tuple]:
     """
     이어진 경로를 병합
@@ -22,6 +25,7 @@ def merge_path(paths: List[List[Tuple]]) -> List[Tuple]:
     return list(itertools.chain(*paths))
 
 
+@timer("gunicorn.error")
 def calculate_distance(path: List[Tuple]) -> float:
     """
     경로의 총 길이를 계산, 경로 내 포인트 간의 거리를 더하는 방식
@@ -35,6 +39,7 @@ def calculate_distance(path: List[Tuple]) -> float:
                for i in range(len(path) - 1))
 
 
+@timer("gunicorn.error")
 def extract_points(coordinates: MultiPoint) -> List[Tuple]:
     """
     주어진 geojson으로부터 좌표정보(위경도 정보)를 추출
@@ -67,6 +72,7 @@ def extract_points(coordinates: MultiPoint) -> List[Tuple]:
     return [adjust(point) for point in geojson.utils.coords(coordinates)]
 
 
+@timer("gunicorn.error")
 def carry_on(path: List[Cell]) -> List[Tuple]:
     """
     경도는 -180도에서 조금만 더 가면 바로 180도로 넘어가는 등, 지구가 둥글기 때문에 발생하는 이슈가 존재. 이를 이어주는 로직이 필요

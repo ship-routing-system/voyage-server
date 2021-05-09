@@ -20,6 +20,9 @@ class Config:
     SENSOR_NOISE: int = field(default=1000)
     INIT_NOISE: int = field(default=10)
 
+    # Logging 설정
+    LOGGER_NAME: str = field(default="gunicorn.error")
+
     @property
     def storage_bucket(self):
         credential = Credentials.from_service_account_file(self.CREDENTIAL_PATH)
