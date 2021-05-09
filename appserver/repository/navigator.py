@@ -11,10 +11,17 @@ from voyage.navigate import Navigator, BiDijkstraNavigator
 from appserver.commons.utils import timer
 from appserver.config import Config
 
+from appserver.commons.exception import RequestError
+
 ROOT_PATH = pathlib.Path(__file__).parent.absolute()
 
 
 class NavigatorRepo:
+    RESOLUTIONS = {
+        "low": "500_1000",  # (500,  1000) GRID
+        "high": "1000_2000" # (1000, 2000) GRID
+    }
+
     navigator = None
 
     def __init__(self, cache: Cache, config: Config):
@@ -30,10 +37,21 @@ class NavigatorRepo:
             return navigator
         return self._caching(navi_type)
 
+    def _choose_resolution(self, properties: Dict):
+        try:
+            precision = properties.get("resolution", "low")
+            return self.RESOLUTIONS[precision]
+        except KeyError:
+            raise RequestError("resolution으로는 high와 low 둘 중에서 골라야만합니다.")
+
+    def _choose_size(self, properties: Dict):
+        # TODO : Ship Type에 따라 size를 결정짓고 저장
+        return "all"
+
     def _choose_type(self, properties: Dict):
-        if "imo_no" in properties:
-            return "1000_2000_all"
-        return "default"
+        resolution = self._choose_resolution(properties)
+        size = self._choose_size(properties)
+        return f"{resolution}_{size}"
 
     @timer("gunicorn.error")
     def _caching(self, navi_type: str) -> Navigator:

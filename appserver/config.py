@@ -17,7 +17,7 @@ class Config:
 
     # Kalman filter optimizer 설정
     SYSTEM_NOISE: int = field(default=10)
-    SENSOR_NOISE: int = field(default=1000)
+    SENSOR_NOISE: int = field(default=500)
     INIT_NOISE: int = field(default=10)
 
     # Logging 설정
