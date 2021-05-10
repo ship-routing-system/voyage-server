@@ -1,5 +1,4 @@
 import logging
-import pathlib
 from io import BytesIO
 from typing import Dict
 
@@ -8,18 +7,15 @@ from flask_caching import Cache
 from voyage.grid import HexGrid
 from voyage.navigate import Navigator, BiDijkstraNavigator
 
+from appserver.commons.exception import RequestError
 from appserver.commons.utils import timer
 from appserver.config import Config
-
-from appserver.commons.exception import RequestError
-
-ROOT_PATH = pathlib.Path(__file__).parent.absolute()
 
 
 class NavigatorRepo:
     RESOLUTIONS = {
         "low": "500_1000",  # (500,  1000) GRID
-        "high": "1000_2000" # (1000, 2000) GRID
+        "high": "1000_2000"  # (1000, 2000) GRID
     }
 
     navigator = None

@@ -7,14 +7,15 @@ from flask import request, jsonify
 from geojson import Feature, MultiPoint
 
 from appserver.commons import RequestError
-from appserver.service import Navigator
+from appserver.service import Navigator, AvoidZoneValidator
 
 
-def create_navigation_endpoints(app: flask.Flask, service: Navigator):
+def create_navigation_endpoints(app: flask.Flask, validator: AvoidZoneValidator, navigator: Navigator):
     @app.route("/navigation", methods=['GET', 'POST'])
     def navigate():
         inputs, properties = parse_inputs(request.data)
-        outputs = service.navigate(inputs, properties)
+        validator.validate(inputs)
+        outputs = navigator.navigate(inputs, properties)
         return jsonify(outputs), 200
 
     def parse_inputs(string) -> Tuple[MultiPoint, Dict]:
