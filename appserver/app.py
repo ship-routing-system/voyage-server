@@ -3,7 +3,7 @@ from flask_caching import Cache
 from voyage.utils import KalmanFilter
 
 from appserver.config import Config, DevConfig
-from appserver.repository import NavigatorRepo, AvoidZoneRepo
+from appserver.repository import AvoidZoneRepo, NavigatorRepo
 from appserver.service import Navigator, PathOptimizer, AvoidZoneValidator
 from appserver.view import create_navigation_endpoints, create_exception_handler
 
@@ -14,8 +14,8 @@ def create_app(cfg: Config):
     cache = Cache(app)
 
     ## Create Persistenace Layer
-    navigator_repository = NavigatorRepo(cache, cfg)
     avoidzone_repository = AvoidZoneRepo(cache, cfg)
+    navigator_repository = NavigatorRepo(avoidzone_repository, cache, cfg)
 
     ## Create Business Layer
     kalman_filter = KalmanFilter(cfg.SYSTEM_NOISE, cfg.SENSOR_NOISE, cfg.INIT_NOISE)

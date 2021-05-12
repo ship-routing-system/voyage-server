@@ -3,11 +3,13 @@ import os
 from typing import Dict
 
 import geojson
+import numpy as np
 from flask_caching import Cache
 from shapely.geometry import shape, MultiPolygon
 
 from appserver.commons.exception import ServerError
 from appserver.config import Config
+from .utils import polygon2matrix
 
 
 class AvoidZoneRepo:
@@ -17,15 +19,21 @@ class AvoidZoneRepo:
         self.cache = cache
         self.bucket = config.storage_bucket
         self.logger = logging.getLogger(config.LOGGER_NAME)
+        self.refresh()
 
     def get(self) -> Dict[str, MultiPolygon]:
         avoid_zone = self.cache.get(self.PREFIX)
         if avoid_zone is not None:
             return avoid_zone
-        return self._caching()
+        return self.refresh()
 
-    def _caching(self):
+    def get_matrix(self, im_size) -> np.ndarray:
+        result = [polygon2matrix(polygon, im_size) for key, polygon in self.get().items() if key != "ground"]
+        if result:
+            return np.stack(result).sum(axis=0)
+        return np.zeros(im_size)
 
+    def refresh(self):
         avoid_zone = {}
         try:
             for blob in self.bucket.list_blobs(prefix=self.PREFIX):

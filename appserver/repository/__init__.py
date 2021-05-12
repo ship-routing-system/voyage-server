@@ -1,4 +1,4 @@
-from .avoidZone import AvoidZoneRepo
+from .avoidZone.repo import AvoidZoneRepo
 from .navigator import NavigatorRepo
 
 __all__ = [

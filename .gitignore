@@ -246,3 +246,4 @@ dmypy.json
 credentials/*.json
 
 # End of https://www.toptal.com/developers/gitignore/api/pycharm+all,python,jupyternotebooks
+/appserver/credentials/gcp_develop_credential.json
