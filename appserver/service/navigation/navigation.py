@@ -2,9 +2,10 @@ from typing import List, Tuple, Dict
 
 from geojson import MultiPoint, LineString, Feature
 
+from appserver.commons.utils import timer
 from appserver.repository import NavigatorRepo
-from .optimization import PathOptimizer
-from .utils import extract_points, calculate_distance, merge_path, carry_on
+from appserver.service.navigation.optimization import PathOptimizer
+from appserver.service.navigation.utils import extract_points, calculate_distance, merge_path, carry_on
 
 
 class Navigator:
@@ -32,6 +33,7 @@ class Navigator:
             properties={"distance": calculate_distance(path)}
         )
 
+    @timer("gunicorn.error")
     def _navigate_interval(self, start, end, navigator) -> List[Tuple]:
         # 구간에 대한 경로 탐색하기
         path = navigator.navigate(start, end)

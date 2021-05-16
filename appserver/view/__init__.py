@@ -1,2 +1,3 @@
 from .exception import create_exception_handler
 from .navigation import create_navigation_endpoints
+from .avoidZone import create_avoid_zone_endpoints
