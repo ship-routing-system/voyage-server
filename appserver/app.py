@@ -4,8 +4,8 @@ from voyage.utils import KalmanFilter
 
 from appserver.config import Config, DevConfig
 from appserver.repository import AvoidZoneRepo, NavigatorRepo
-from appserver.service import Navigator, PathOptimizer, AvoidZoneValidator
-from appserver.view import create_navigation_endpoints, create_exception_handler
+from appserver.service import Navigator, PathOptimizer, AvoidZoneValidator, AvoidZoneService
+from appserver.view import create_navigation_endpoints, create_exception_handler, create_avoid_zone_endpoints
 
 
 def create_app(cfg: Config):
@@ -23,9 +23,11 @@ def create_app(cfg: Config):
     navigator = Navigator(navigator_repository, path_optimizer)
 
     zone_validator = AvoidZoneValidator(avoidzone_repository)
+    zone_service = AvoidZoneService(cache, avoidzone_repository)
 
     ## Create Endpoint
     create_navigation_endpoints(app, zone_validator, navigator)
+    create_avoid_zone_endpoints(app, zone_service)
     create_exception_handler(app)
 
     return app
