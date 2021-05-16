@@ -13,6 +13,9 @@ class AvoidZoneService:
     def find_all(self) -> FeatureCollection:
         return FeatureCollection([Feature(id=key, geometry=mapping(value)) for key, value in self.repo.get().items()])
 
+    def find(self, key: str) -> Feature:
+        return Feature(id=key, geometry=mapping(self.repo.get().get(key)))
+
     def save(self, feature: Feature):
         self.repo.save(feature["id"], feature)
         self.cache.clear()
