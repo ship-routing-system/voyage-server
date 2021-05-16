@@ -2,11 +2,16 @@ from typing import Tuple
 
 import cv2
 import numpy as np
-from shapely.geometry import MultiPolygon
 from shapely.coords import CoordinateSequence
+from shapely.geometry import Polygon, MultiPolygon
 
 
-def polygon2matrix(polygons: MultiPolygon, im_size: Tuple[int, int]) -> np.ndarray:
+def polygon2matrix(polygon: MultiPolygon, im_size: Tuple[int, int]) -> np.ndarray:
+    if isinstance(polygon, Polygon):
+        polygons = MultiPolygon(polygons=[polygon])
+    else:
+        polygons = polygon
+
     img_mask = np.zeros(im_size, np.uint8)
     exteriors = [adjust_coord(poly.exterior.coords, im_size) for poly in polygons]
     interiors = [adjust_coord(pi.coords, im_size)
