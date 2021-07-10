@@ -2,8 +2,8 @@ import itertools
 from typing import List, Tuple
 
 import geojson
+import numpy as np
 from geojson import MultiPoint
-from voyage.grid import Cell
 from voyage.utils.distance import haversine
 
 from appserver.commons.utils import timer
@@ -73,7 +73,7 @@ def extract_points(coordinates: MultiPoint) -> List[Tuple]:
 
 
 @timer("gunicorn.error")
-def carry_on(path: List[Cell]) -> List[Tuple]:
+def carry_on(path: np.ndarray) -> np.ndarray:
     """
     경도는 -180도에서 조금만 더 가면 바로 180도로 넘어가는 등, 지구가 둥글기 때문에 발생하는 이슈가 존재. 이를 이어주는 로직이 필요
 
@@ -84,19 +84,20 @@ def carry_on(path: List[Cell]) -> List[Tuple]:
 
     """
     if len(path) == 0:
-        return []
+        return path
 
     def on_the_border(prev, curr):
         sign = prev * curr < 0
         size = abs(prev) + abs(curr) > 180
         return sign and size
 
-    start = path[0].lat, path[0].lon
-    res = [start]
-    for cell in path[1:]:
+    res = [path[0]]
+    for curr_lat, curr_lon in path[1:]:
         prev_lon = res[-1][1]
-        curr_lat, curr_lon = cell.lat, cell.lon
         if on_the_border(prev_lon, curr_lon):
-            curr_lon += 360 if curr_lon < 0 else -360
+            if curr_lon < 0:
+                curr_lon += 360
+            else:
+                curr_lon -= 360
         res.append((curr_lat, curr_lon))
-    return res
+    return np.array(res)

@@ -4,8 +4,7 @@ from typing import Dict, Tuple
 
 import numpy as np
 from flask_caching import Cache
-from voyage import HexGrid
-from voyage.navigate import BiDijkstraNavigator, Navigator
+from voyage.navigate import Navigator, FastNavigator
 
 from appserver.commons.exception import RequestError
 from appserver.commons.utils import timer
@@ -52,8 +51,7 @@ class NavigatorRepo:
         cost[matrix > 0.] = np.inf
         self.cache.set(key, cost)
 
-        grid = HexGrid(*cost.shape)
-        navigator = BiDijkstraNavigator(cost, grid)
+        navigator = FastNavigator(cost)
         self.cache.set(key, navigator)
         return navigator
 
