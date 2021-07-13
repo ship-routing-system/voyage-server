@@ -91,11 +91,10 @@ def carry_on(path: List[Cell]) -> List[Tuple]:
         size = abs(prev) + abs(curr) > 180
         return sign and size
 
-    start = path[0].lat, path[0].lon
+    start = path[0]
     res = [start]
-    for cell in path[1:]:
+    for curr_lat, curr_lon in path[1:]:
         prev_lon = res[-1][1]
-        curr_lat, curr_lon = cell.lat, cell.lon
         if on_the_border(prev_lon, curr_lon):
             curr_lon += 360 if curr_lon < 0 else -360
         res.append((curr_lat, curr_lon))
